@@ -3,89 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Florida Pro Se Chapter 7 • BestCase for Debtors</title>
+  <title>Florida Pro Se Chapter 7 • Diagnostic</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
   <style>body{font-family:'Inter',system_ui,sans-serif}</style>
 </head>
-<body class="bg-gray-50">
+<body class="bg-gray-50 p-8">
 
-<div class="max-w-5xl mx-auto px-6 py-8">
+<div class="max-w-4xl mx-auto">
+  <h1 class="text-3xl font-bold mb-6">Diagnostic Tool – Field Names</h1>
+  <p class="mb-6">This will load your form_b_101.pdf and show every field name that actually exists.</p>
 
-  <div class="bg-red-50 border border-red-300 text-red-800 p-4 rounded-2xl mb-8 text-sm">
-    <strong>Important Legal Notice:</strong> This is an automated document preparation tool only. <strong>It is not legal advice.</strong><br>
-    If you choose to file Chapter 7 bankruptcy, you are solely responsible for the accuracy of the information you enter and for complying with all court rules.
-  </div>
+  <button onclick="showFieldNames()" 
+          class="px-8 py-4 bg-blue-700 text-white font-semibold rounded-2xl">
+    Load PDF and Show All Field Names
+  </button>
 
-  <div id="step-1">
-    <div class="text-center py-16">
-      <h1 class="text-5xl font-bold mb-4">The BestCase for pro se debtors</h1>
-      <p class="text-xl text-gray-600">Professional Chapter 7 bankruptcy preparation — guided step-by-step.</p>
-
-      <div class="mt-12 bg-white border-2 border-gray-200 rounded-3xl p-8 max-w-lg mx-auto">
-        <label class="flex items-start gap-4 cursor-pointer">
-          <input type="checkbox" id="affirm" class="mt-1 w-5 h-5 accent-blue-700" onchange="checkAffirm()">
-          <span class="text-left text-sm">I understand that this tool is <strong>not legal advice</strong>. I accept full responsibility for the accuracy of the information I enter and for complying with all court rules if I choose to file.</span>
-        </label>
-      </div>
-
-      <button onclick="startForm()" id="startBtn" disabled class="mt-8 px-12 py-4 bg-blue-700 text-white font-semibold text-lg rounded-2xl flex items-center gap-3 mx-auto">
-        Begin the Questionnaire <i class="fa-solid fa-arrow-right"></i>
-      </button>
-    </div>
-  </div>
-
-  <div id="main-content" class="hidden"></div>
+  <pre id="output" class="mt-8 bg-white p-6 rounded-2xl border text-sm overflow-auto max-h-96"></pre>
 </div>
 
 <script>
-  let currentStep = 1;
-  let formData = JSON.parse(localStorage.getItem('bkFormData')) || {};
-
-  function saveData() { localStorage.setItem('bkFormData', JSON.stringify(formData)); }
-  function checkAffirm() { document.getElementById('startBtn').disabled = !document.getElementById('affirm').checked; }
-
-  function startForm() {
-    document.getElementById('step-1').classList.add('hidden');
-    document.getElementById('main-content').classList.remove('hidden');
-    currentStep = 2;
-    renderStep();
-  }
-
-  function renderStep() {
-    const container = document.getElementById('main-content');
-    let html = `<div class="bg-white rounded-3xl shadow-xl p-8">`;
-
-    if (currentStep === 2) {
-      html += `<h2 class="text-3xl font-semibold mb-6">Section 1 — Basic Information</h2>`;
-      html += `<div class="grid grid-cols-2 gap-6">`;
-      html += `<div><label class="block text-sm mb-1">Full Name</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.name||''}" onchange="formData.name=this.value;saveData()"></div>`;
-      html += `<div><label class="block text-sm mb-1">Date of Birth</label><input type="date" class="w-full border rounded-2xl px-4 py-3" value="${formData.dob||''}" onchange="formData.dob=this.value;saveData()"></div>`;
-      html += `<div><label class="block text-sm mb-1">SSN</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.ssn||''}" onchange="formData.ssn=this.value;saveData()"></div>`;
-      html += `<div><label class="block text-sm mb-1">Address</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.address||''}" onchange="formData.address=this.value;saveData()"></div>`;
-      html += `<div><label class="block text-sm mb-1">City</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.city||''}" onchange="formData.city=this.value;saveData()"></div>`;
-      html += `<div><label class="block text-sm mb-1">State</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.state||''}" onchange="formData.state=this.value;saveData()"></div>`;
-      html += `<div><label class="block text-sm mb-1">Zip</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.zip||''}" onchange="formData.zip=this.value;saveData()"></div>`;
-      html += `</div>`;
-    } else if (currentStep === 8) {
-      html += `<h2 class="text-3xl font-semibold mb-6 text-green-600">Review & Download Official Forms</h2>`;
-      html += `<button onclick="downloadOfficialForms()" class="mt-8 w-full py-6 bg-green-600 text-white text-xl font-semibold rounded-2xl">Download Real Official Chapter 7 Forms</button>`;
-    } else {
-      html += `<h2 class="text-3xl font-semibold mb-6">Step ${currentStep} — Placeholder</h2><p class="text-gray-500">More sections will be added here soon.</p>`;
-    }
-
-    html += `<div class="flex justify-between mt-12"><button onclick="prevStep()" class="px-8 py-3 text-gray-500">← Back</button><button onclick="nextStep()" class="px-8 py-3 bg-blue-700 text-white rounded-2xl">Continue →</button></div></div>`;
-    container.innerHTML = html;
-  }
-
-  function nextStep() { currentStep++; if (currentStep > 8) currentStep = 8; renderStep(); }
-  function prevStep() { currentStep--; if (currentStep < 2) currentStep = 2; renderStep(); }
-
-  async function downloadOfficialForms() {
-    const status = document.createElement('div');
-    status.textContent = "Loading official form...";
-    document.body.appendChild(status);
+  async function showFieldNames() {
+    const output = document.getElementById('output');
+    output.textContent = "Loading form_b_101.pdf...\n";
 
     try {
       const { PDFDocument } = PDFLib;
@@ -94,29 +34,21 @@
       const pdfDoc = await PDFDocument.load(existingPdfBytes);
       const form = pdfDoc.getForm();
 
-      // Fill the real official form
-      if (formData.name) form.getTextField("1a").setText(formData.name);
-      if (formData.ssn) form.getTextField("3").setText(formData.ssn);
-      if (formData.address) form.getTextField("4").setText(formData.address);
-      if (formData.city && formData.state && formData.zip) {
-        form.getTextField("5").setText(`${formData.city}, ${formData.state} ${formData.zip}`);
-      }
+      const fields = form.getFields();
+      output.textContent += `Found ${fields.length} fields:\n\n`;
 
-      const pdfBytes = await pdfDoc.save();
-      const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = "Official_Voluntary_Petition_B101.pdf";
-      link.click();
+      fields.forEach((field, i) => {
+        const name = field.getName();
+        output.textContent += `${i+1}. ${name}\n`;
+        console.log(`Field ${i+1}:`, name);
+      });
 
-      status.textContent = "✅ Success! Official petition downloaded.";
+      output.textContent += "\n\nCheck the browser console (F12) for the full list too.";
     } catch (err) {
-      status.textContent = "Error: " + err.message;
+      output.textContent += "\nError: " + err.message;
       console.error(err);
     }
   }
-
-  setTimeout(checkAffirm, 200);
 </script>
 </body>
 </html>
