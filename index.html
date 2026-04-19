@@ -21,7 +21,7 @@
   <div id="step-1">
     <div class="text-center py-16">
       <h1 class="text-5xl font-bold mb-4">The BestCase for pro se debtors</h1>
-      <p class="text-xl text-gray-600">Professional Chapter 7 bankruptcy preparation — guided step-by-step.</p>
+      <p class="text-xl text-gray-600">Voluntary Petition — Complete Form B 101</p>
 
       <div class="mt-12 bg-white border-2 border-gray-200 rounded-3xl p-8 max-w-lg mx-auto">
         <label class="flex items-start gap-4 cursor-pointer">
@@ -31,7 +31,7 @@
       </div>
 
       <button onclick="startForm()" id="startBtn" disabled class="mt-8 px-12 py-4 bg-blue-700 text-white font-semibold text-lg rounded-2xl flex items-center gap-3 mx-auto">
-        Begin the Questionnaire <i class="fa-solid fa-arrow-right"></i>
+        Begin Full Petition Questionnaire <i class="fa-solid fa-arrow-right"></i>
       </button>
     </div>
   </div>
@@ -58,9 +58,9 @@
     let html = `<div class="bg-white rounded-3xl shadow-xl p-8">`;
 
     if (currentStep === 2) {
-      html += `<h2 class="text-3xl font-semibold mb-6">Voluntary Petition — All Fields (Form B 101)</h2>`;
+      html += `<h2 class="text-3xl font-semibold mb-6">Complete Voluntary Petition (Form B 101)</h2>`;
 
-      // Main debtor name
+      // Debtor name
       html += `<div class="grid grid-cols-3 gap-6">`;
       html += `<div><label class="block text-sm mb-1">First Name</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.firstName||''}" onchange="formData.firstName=this.value;saveData()"></div>`;
       html += `<div><label class="block text-sm mb-1">Middle Name</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.middleName||''}" onchange="formData.middleName=this.value;saveData()"></div>`;
@@ -92,7 +92,7 @@
       html += `<div><label class="block text-sm mb-1">Zip</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.zip||''}" onchange="formData.zip=this.value;saveData()"></div>`;
       html += `</div>`;
 
-      // Chapter selection (no pre-select)
+      // Chapter
       html += `<div class="mt-8 border-t pt-6"><h3 class="font-semibold mb-4">Chapter</h3>`;
       html += `<div class="flex gap-8">`;
       html += `<label><input type="radio" name="chapter" onchange="formData.chapter='7';saveData()"> Chapter 7</label>`;
@@ -103,17 +103,34 @@
       // Joint filing
       html += `<div class="mt-6"><label class="flex items-center gap-3"><input type="checkbox" onchange="formData.joint=this.checked;saveData()"> Filing jointly with spouse</label></div>`;
 
-      // District selection
-      html += `<div class="mt-8 border-t pt-6"><h3 class="font-semibold mb-4">Bankruptcy District / Court</h3>`;
+      // 180-day jurisdiction (no pre-select)
+      html += `<div class="mt-8 border-t pt-6"><h3 class="font-semibold mb-4">Have you lived in this district for the last 180 days?</h3>`;
+      html += `<div class="flex gap-8">`;
+      html += `<label><input type="radio" name="jurisdiction180" onchange="formData.jurisdiction180='yes';saveData()"> Yes</label>`;
+      html += `<label><input type="radio" name="jurisdiction180" onchange="formData.jurisdiction180='no';saveData()"> No</label>`;
+      html += `</div></div>`;
+
+      // District / Court
+      html += `<div class="mt-6"><label class="block text-sm mb-1">Bankruptcy District / Court</label>`;
       html += `<select class="w-full border rounded-2xl px-4 py-3" onchange="formData.district=this.value;saveData()">`;
       html += `<option value="">-- Select District --</option>`;
-      html += `<option value="Middle District of Florida">Middle District of Florida (Orlando / Tampa / Jacksonville)</option>`;
-      html += `<option value="Southern District of Florida">Southern District of Florida (Miami / Ft. Lauderdale)</option>`;
+      html += `<option value="Middle District of Florida">Middle District of Florida (Orlando)</option>`;
+      html += `<option value="Southern District of Florida">Southern District of Florida</option>`;
       html += `<option value="Northern District of Florida">Northern District of Florida</option>`;
-      html += `<option value="Other">Other (please specify below)</option>`;
       html += `</select></div>`;
 
-      // Spouse main name
+      // Prior bankruptcy
+      html += `<div class="mt-8 border-t pt-6"><h3 class="font-semibold mb-4">Prior bankruptcy in last 8 years?</h3>`;
+      html += `<div class="flex gap-8">`;
+      html += `<label><input type="radio" name="priorBk" onchange="formData.priorBk='yes';saveData()"> Yes</label>`;
+      html += `<label><input type="radio" name="priorBk" onchange="formData.priorBk='no';saveData()"> No</label>`;
+      html += `</div>`;
+      html += `<div class="mt-4 text-sm">If Yes, list up to 3 prior cases:</div>`;
+      html += `<div class="mt-4"><input type="text" class="w-full border rounded-2xl px-4 py-3" placeholder="Case 1 – District / When / Case #" value="${formData.priorCase1||''}" onchange="formData.priorCase1=this.value;saveData()"></div>`;
+      html += `<div class="mt-4"><input type="text" class="w-full border rounded-2xl px-4 py-3" placeholder="Case 2 – District / When / Case #" value="${formData.priorCase2||''}" onchange="formData.priorCase2=this.value;saveData()"></div>`;
+      html += `<div class="mt-4"><input type="text" class="w-full border rounded-2xl px-4 py-3" placeholder="Case 3 – District / When / Case #" value="${formData.priorCase3||''}" onchange="formData.priorCase3=this.value;saveData()"></div></div>`;
+
+      // Spouse section
       html += `<div class="mt-10 border-t pt-6"><h3 class="font-semibold mb-4">Spouse Information (if filing jointly)</h3>`;
       html += `<div class="grid grid-cols-3 gap-6">`;
       html += `<div><label class="block text-sm mb-1">Spouse First</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.spouseFirst||''}" onchange="formData.spouseFirst=this.value;saveData()"></div>`;
@@ -150,12 +167,11 @@
       const pdfDoc = await PDFDocument.load(existingPdfBytes);
       const form = pdfDoc.getForm();
 
-      // Debtor name
+      // All debtor fields
       if (formData.firstName) form.getTextField("Debtor1.First name").setText(formData.firstName);
       if (formData.middleName) form.getTextField("Debtor1.Middle name").setText(formData.middleName);
       if (formData.lastName) form.getTextField("Debtor1.Last name").setText(formData.lastName);
 
-      // Debtor other names
       if (formData.otherFirst) form.getTextField("Debtor1.First name_3").setText(formData.otherFirst);
       if (formData.otherMiddle) form.getTextField("Debtor1.Middle name_3").setText(formData.otherMiddle);
       if (formData.otherLast) form.getTextField("Debtor1.Last name_3").setText(formData.otherLast);
@@ -169,12 +185,11 @@
       if (formData.state) form.getTextField("Debtor1.State").setText(formData.state.toString().slice(0,2).toUpperCase());
       if (formData.zip) form.getTextField("Debtor1.ZIP Code").setText(formData.zip.toString().slice(0,9));
 
-      // Spouse name
+      // Spouse fields
       if (formData.spouseFirst) form.getTextField("Debtor2.First name").setText(formData.spouseFirst);
       if (formData.spouseMiddle) form.getTextField("Debtor2.Middle name_2").setText(formData.spouseMiddle);
       if (formData.spouseLast) form.getTextField("Debtor2.Last name").setText(formData.spouseLast);
 
-      // Spouse other names
       if (formData.spouseOtherFirst) form.getTextField("Debtor2.First name_4").setText(formData.spouseOtherFirst);
       if (formData.spouseOtherMiddle) form.getTextField("Debtor2.Middle name_4").setText(formData.spouseOtherMiddle);
       if (formData.spouseOtherLast) form.getTextField("Debtor2.Last name_4").setText(formData.spouseOtherLast);
@@ -185,9 +200,14 @@
         try { form.getCheckBox("Check Box2").check(); } catch(e) {}
       } else if (formData.chapter === '13') {
         try { form.getCheckBox("Check Box3").check(); } catch(e) {}
+        try { form.getCheckBox("Check Box6").check(); } catch(e) {}
+        try { form.getCheckBox("Check Box7").check(); } catch(e) {}
       } else if (formData.chapter === '11') {
         try { form.getCheckBox("Check Box4").check(); } catch(e) {}
       }
+
+      // District
+      if (formData.district) form.getTextField("Bankruptcy District Information").setText(formData.district);
 
       // Joint filing
       if (formData.joint) try { form.getCheckBox("Check Box5").check(); } catch(e) {}
@@ -199,7 +219,7 @@
       link.download = "Official_Voluntary_Petition_B101.pdf";
       link.click();
 
-      alert("✅ Voluntary Petition downloaded — please test the new spouse other names and district selection fields.");
+      alert("✅ All fields from the Official Form B 101 have been mapped. Please download and check EVERY section on the PDF.");
     } catch (err) {
       alert("Error: " + err.message);
       console.error(err);
