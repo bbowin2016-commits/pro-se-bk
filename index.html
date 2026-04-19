@@ -21,7 +21,7 @@
   <div id="step-1">
     <div class="text-center py-16">
       <h1 class="text-5xl font-bold mb-4">The BestCase for pro se debtors</h1>
-      <p class="text-xl text-gray-600">Complete Voluntary Petition (Form B 101) — All Fields</p>
+      <p class="text-xl text-gray-600">Complete Voluntary Petition — ALL fields from Official Form B 101</p>
 
       <div class="mt-12 bg-white border-2 border-gray-200 rounded-3xl p-8 max-w-lg mx-auto">
         <label class="flex items-start gap-4 cursor-pointer">
@@ -58,7 +58,7 @@
     let html = `<div class="bg-white rounded-3xl shadow-xl p-8">`;
 
     if (currentStep === 2) {
-      html += `<h2 class="text-3xl font-semibold mb-6">Complete Voluntary Petition — All Fields (Form B 101)</h2>`;
+      html += `<h2 class="text-3xl font-semibold mb-6">Voluntary Petition — ALL Fields from Official Form B 101</h2>`;
 
       // Debtor name
       html += `<div class="grid grid-cols-3 gap-6">`;
@@ -92,7 +92,7 @@
       html += `<div><label class="block text-sm mb-1">Zip</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.zip||''}" onchange="formData.zip=this.value;saveData()"></div>`;
       html += `</div>`;
 
-      // Chapter
+      // Chapter selection (no pre-select)
       html += `<div class="mt-8 border-t pt-6"><h3 class="font-semibold mb-4">Chapter</h3>`;
       html += `<div class="flex gap-8">`;
       html += `<label><input type="radio" name="chapter" onchange="formData.chapter='7';saveData()"> Chapter 7</label>`;
@@ -103,7 +103,7 @@
       // Joint filing
       html += `<div class="mt-6"><label class="flex items-center gap-3"><input type="checkbox" onchange="formData.joint=this.checked;saveData()"> Filing jointly with spouse</label></div>`;
 
-      // 180-day jurisdiction
+      // 180-day jurisdiction (no pre-select)
       html += `<div class="mt-8 border-t pt-6"><h3 class="font-semibold mb-4">Have you lived in this district for the last 180 days?</h3>`;
       html += `<div class="flex gap-8">`;
       html += `<label><input type="radio" name="jurisdiction180" onchange="formData.jurisdiction180='yes';saveData()"> Yes</label>`;
@@ -130,7 +130,7 @@
       html += `<div class="mt-4"><input type="text" class="w-full border rounded-2xl px-4 py-3" placeholder="Case 2 – District / When / Case #" value="${formData.priorCase2||''}" onchange="formData.priorCase2=this.value;saveData()"></div>`;
       html += `<div class="mt-4"><input type="text" class="w-full border rounded-2xl px-4 py-3" placeholder="Case 3 – District / When / Case #" value="${formData.priorCase3||''}" onchange="formData.priorCase3=this.value;saveData()"></div></div>`;
 
-      // Spouse section
+      // Spouse
       html += `<div class="mt-10 border-t pt-6"><h3 class="font-semibold mb-4">Spouse Information (if filing jointly)</h3>`;
       html += `<div class="grid grid-cols-3 gap-6">`;
       html += `<div><label class="block text-sm mb-1">Spouse First</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.spouseFirst||''}" onchange="formData.spouseFirst=this.value;saveData()"></div>`;
@@ -167,7 +167,7 @@
       const pdfDoc = await PDFDocument.load(existingPdfBytes);
       const form = pdfDoc.getForm();
 
-      console.log("%c=== Starting full fill of all 159 fields ===", "color: green; font-weight: bold");
+      console.log("%c=== Filling ALL fields from diagnostic ===", "color: green; font-weight: bold");
 
       // All fields with safe try/catch
       const safeSetText = (fieldName, value) => {
@@ -175,19 +175,14 @@
         try {
           form.getTextField(fieldName).setText(String(value));
           console.log(`✅ Text: ${fieldName}`);
-        } catch(e) {
-          console.log(`⚠️  Skipped text field ${fieldName}`);
-        }
+        } catch (e) { console.log(`⚠️ Skipped ${fieldName}`); }
       };
 
       const safeCheck = (fieldName) => {
-        try {
-          form.getCheckBox(fieldName).check();
-          console.log(`✅ CheckBox: ${fieldName}`);
-        } catch(e) {}
+        try { form.getCheckBox(fieldName).check(); console.log(`✅ Check: ${fieldName}`); } catch (e) {}
       };
 
-      // Populate all known fields
+      // Populate every field from your diagnostic list
       safeSetText("Debtor1.First name", formData.firstName);
       safeSetText("Debtor1.Middle name", formData.middleName);
       safeSetText("Debtor1.Last name", formData.lastName);
@@ -211,16 +206,9 @@
       safeSetText("Debtor2.Last name_4", formData.spouseOtherLast);
 
       // Chapter
-      if (formData.chapter === '7') {
-        safeCheck("Check Box1");
-        safeCheck("Check Box2");
-      } else if (formData.chapter === '13') {
-        safeCheck("Check Box3");
-        safeCheck("Check Box6");
-        safeCheck("Check Box7");
-      } else if (formData.chapter === '11') {
-        safeCheck("Check Box4");
-      }
+      if (formData.chapter === '7') { safeCheck("Check Box1"); safeCheck("Check Box2"); }
+      if (formData.chapter === '13') { safeCheck("Check Box3"); safeCheck("Check Box6"); safeCheck("Check Box7"); }
+      if (formData.chapter === '11') { safeCheck("Check Box4"); }
 
       // Joint filing
       if (formData.joint) safeCheck("Check Box5");
@@ -232,8 +220,8 @@
       link.download = "Official_Voluntary_Petition_B101.pdf";
       link.click();
 
-      console.log("%c=== All fields attempted ===", "color: green; font-weight: bold");
-      alert("✅ Full Voluntary Petition downloaded. Open browser console (F12) for the complete log of every field that was filled.");
+      console.log("%c=== All fields attempted — check console for log ===", "color: green; font-weight: bold");
+      alert("✅ Full Voluntary Petition downloaded. Open F12 Console for the complete fill log.");
     } catch (err) {
       alert("Error: " + err.message);
       console.error(err);
