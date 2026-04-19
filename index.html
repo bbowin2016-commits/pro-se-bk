@@ -57,28 +57,42 @@
     const container = document.getElementById('main-content');
     let html = `<div class="bg-white rounded-3xl shadow-xl p-8">`;
 
-    if (currentStep === 2) {
+    if (currentStep === 2) { // Full Section 1
       html += `<h2 class="text-3xl font-semibold mb-6">Section 1 — Basic Information</h2>`;
       html += `<div class="grid grid-cols-3 gap-6">`;
       html += `<div><label class="block text-sm mb-1">First Name</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.firstName||''}" onchange="formData.firstName=this.value;saveData()"></div>`;
       html += `<div><label class="block text-sm mb-1">Middle Name</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.middleName||''}" onchange="formData.middleName=this.value;saveData()"></div>`;
       html += `<div><label class="block text-sm mb-1">Last Name</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.lastName||''}" onchange="formData.lastName=this.value;saveData()"></div>`;
       html += `</div>`;
+
+      html += `<div class="mt-6"><label class="block text-sm mb-1">Other names used in the past 8 years</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.otherNames||''}" onchange="formData.otherNames=this.value;saveData()"></div>`;
+
+      html += `<div class="mt-6"><label class="block text-sm mb-1">Business names or EIN used in the last 8 years</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.businessNames||''}" onchange="formData.businessNames=this.value;saveData()"></div>`;
+
       html += `<div class="grid grid-cols-2 gap-6 mt-6">`;
       html += `<div><label class="block text-sm mb-1">Date of Birth</label><input type="date" class="w-full border rounded-2xl px-4 py-3" value="${formData.dob||''}" onchange="formData.dob=this.value;saveData()"></div>`;
       html += `<div><label class="block text-sm mb-1">SSN (full 9 digits)</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.ssn||''}" onchange="formData.ssn=this.value;saveData()"></div>`;
       html += `</div>`;
+
       html += `<div><label class="block text-sm mb-1">Address</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.address||''}" onchange="formData.address=this.value;saveData()"></div>`;
       html += `<div class="grid grid-cols-3 gap-6">`;
       html += `<div><label class="block text-sm mb-1">City</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.city||''}" onchange="formData.city=this.value;saveData()"></div>`;
       html += `<div><label class="block text-sm mb-1">State (2 letters)</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.state||''}" onchange="formData.state=this.value;saveData()"></div>`;
       html += `<div><label class="block text-sm mb-1">Zip</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.zip||''}" onchange="formData.zip=this.value;saveData()"></div>`;
       html += `</div>`;
+
+      // Spouse section
+      html += `<div class="mt-8 border-t pt-6"><h3 class="font-semibold mb-4">Spouse Information (if filing jointly)</h3>`;
+      html += `<div class="grid grid-cols-3 gap-6">`;
+      html += `<div><label class="block text-sm mb-1">Spouse First Name</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.spouseFirst||''}" onchange="formData.spouseFirst=this.value;saveData()"></div>`;
+      html += `<div><label class="block text-sm mb-1">Spouse Middle Name</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.spouseMiddle||''}" onchange="formData.spouseMiddle=this.value;saveData()"></div>`;
+      html += `<div><label class="block text-sm mb-1">Spouse Last Name</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.spouseLast||''}" onchange="formData.spouseLast=this.value;saveData()"></div>`;
+      html += `</div></div>`;
     } else if (currentStep === 8) {
       html += `<h2 class="text-3xl font-semibold mb-6 text-green-600">Review & Download Official Forms</h2>`;
       html += `<button onclick="downloadOfficialForms()" class="mt-8 w-full py-6 bg-green-600 text-white text-xl font-semibold rounded-2xl">Download Real Official Chapter 7 Forms</button>`;
     } else {
-      html += `<h2 class="text-3xl font-semibold mb-6">Step ${currentStep} — Placeholder</h2><p class="text-gray-500">More sections coming soon.</p>`;
+      html += `<h2 class="text-3xl font-semibold mb-6">Step ${currentStep} — Placeholder</h2><p class="text-gray-500">More sections (Property, Debts, Means Test, SOFA, etc.) coming in the next update.</p>`;
     }
 
     html += `<div class="flex justify-between mt-12"><button onclick="prevStep()" class="px-8 py-3 text-gray-500">← Back</button><button onclick="nextStep()" class="px-8 py-3 bg-blue-700 text-white rounded-2xl">Continue →</button></div></div>`;
@@ -96,7 +110,7 @@
       const pdfDoc = await PDFDocument.load(existingPdfBytes);
       const form = pdfDoc.getForm();
 
-      // Fill name fields separately
+      // Name fields
       if (formData.firstName) form.getTextField("Debtor1.First name").setText(formData.firstName);
       if (formData.middleName) form.getTextField("Debtor1.Middle name").setText(formData.middleName);
       if (formData.lastName) form.getTextField("Debtor1.Last name").setText(formData.lastName);
