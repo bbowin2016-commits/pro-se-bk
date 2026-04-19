@@ -59,27 +59,41 @@
 
     if (currentStep === 2) {
       html += `<h2 class="text-3xl font-semibold mb-6">Section 1 — Basic Information</h2>`;
+
+      // Debtor name
       html += `<div class="grid grid-cols-3 gap-6">`;
       html += `<div><label class="block text-sm mb-1">First Name</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.firstName||''}" onchange="formData.firstName=this.value;saveData()"></div>`;
       html += `<div><label class="block text-sm mb-1">Middle Name</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.middleName||''}" onchange="formData.middleName=this.value;saveData()"></div>`;
       html += `<div><label class="block text-sm mb-1">Last Name</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.lastName||''}" onchange="formData.lastName=this.value;saveData()"></div>`;
       html += `</div>`;
 
+      // Other names used
       html += `<div class="mt-6"><label class="block text-sm mb-1">Other names used in the past 8 years</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.otherNames||''}" onchange="formData.otherNames=this.value;saveData()"></div>`;
 
+      // Business names / EIN
       html += `<div class="mt-6"><label class="block text-sm mb-1">Business names or EIN used in the last 8 years</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.businessNames||''}" onchange="formData.businessNames=this.value;saveData()"></div>`;
 
+      // DOB and SSN
       html += `<div class="grid grid-cols-2 gap-6 mt-6">`;
       html += `<div><label class="block text-sm mb-1">Date of Birth</label><input type="date" class="w-full border rounded-2xl px-4 py-3" value="${formData.dob||''}" onchange="formData.dob=this.value;saveData()"></div>`;
       html += `<div><label class="block text-sm mb-1">SSN (full 9 digits)</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.ssn||''}" onchange="formData.ssn=this.value;saveData()"></div>`;
       html += `</div>`;
 
+      // Address
       html += `<div><label class="block text-sm mb-1">Address</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.address||''}" onchange="formData.address=this.value;saveData()"></div>`;
       html += `<div class="grid grid-cols-3 gap-6">`;
       html += `<div><label class="block text-sm mb-1">City</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.city||''}" onchange="formData.city=this.value;saveData()"></div>`;
       html += `<div><label class="block text-sm mb-1">State (2 letters)</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.state||''}" onchange="formData.state=this.value;saveData()"></div>`;
       html += `<div><label class="block text-sm mb-1">Zip</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.zip||''}" onchange="formData.zip=this.value;saveData()"></div>`;
       html += `</div>`;
+
+      // Spouse section
+      html += `<div class="mt-10 border-t pt-6"><h3 class="font-semibold mb-4">Spouse Information (if filing jointly)</h3>`;
+      html += `<div class="grid grid-cols-3 gap-6">`;
+      html += `<div><label class="block text-sm mb-1">Spouse First Name</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.spouseFirst||''}" onchange="formData.spouseFirst=this.value;saveData()"></div>`;
+      html += `<div><label class="block text-sm mb-1">Spouse Middle Name</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.spouseMiddle||''}" onchange="formData.spouseMiddle=this.value;saveData()"></div>`;
+      html += `<div><label class="block text-sm mb-1">Spouse Last Name</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.spouseLast||''}" onchange="formData.spouseLast=this.value;saveData()"></div>`;
+      html += `</div></div>`;
     } else if (currentStep === 8) {
       html += `<h2 class="text-3xl font-semibold mb-6 text-green-600">Review & Download Official Forms</h2>`;
       html += `<button onclick="downloadOfficialForms()" class="mt-8 w-full py-6 bg-green-600 text-white text-xl font-semibold rounded-2xl">Download Real Official Chapter 7 Forms</button>`;
@@ -102,12 +116,15 @@
       const pdfDoc = await PDFDocument.load(existingPdfBytes);
       const form = pdfDoc.getForm();
 
-      console.log("Filling fields with data:", formData);
-
-      // Name fields
+      // Debtor name
       if (formData.firstName) form.getTextField("Debtor1.First name").setText(formData.firstName);
       if (formData.middleName) form.getTextField("Debtor1.Middle name").setText(formData.middleName);
       if (formData.lastName) form.getTextField("Debtor1.Last name").setText(formData.lastName);
+
+      // Other names (using the _3 fields from your diagnostic)
+      if (formData.otherNames) {
+        form.getTextField("Debtor1.First name_3").setText(formData.otherNames);
+      }
 
       // SSN (last 4 only)
       if (formData.ssn) {
@@ -119,6 +136,11 @@
       if (formData.city) form.getTextField("Debtor1.City").setText(formData.city);
       if (formData.state) form.getTextField("Debtor1.State").setText(formData.state.toString().slice(0,2).toUpperCase());
       if (formData.zip) form.getTextField("Debtor1.ZIP Code").setText(formData.zip.toString().slice(0,9));
+
+      // Spouse
+      if (formData.spouseFirst) form.getTextField("Debtor2.First name").setText(formData.spouseFirst);
+      if (formData.spouseMiddle) form.getTextField("Debtor2.Middle name_2").setText(formData.spouseMiddle);
+      if (formData.spouseLast) form.getTextField("Debtor2.Last name").setText(formData.spouseLast);
 
       const pdfBytes = await pdfDoc.save();
       const blob = new Blob([pdfBytes], { type: 'application/pdf' });
