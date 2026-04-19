@@ -65,7 +65,7 @@
       html += `<div><label class="block text-sm mb-1">SSN (full 9 digits)</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.ssn||''}" onchange="formData.ssn=this.value;saveData()"></div>`;
       html += `<div><label class="block text-sm mb-1">Address</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.address||''}" onchange="formData.address=this.value;saveData()"></div>`;
       html += `<div><label class="block text-sm mb-1">City</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.city||''}" onchange="formData.city=this.value;saveData()"></div>`;
-      html += `<div><label class="block text-sm mb-1">State</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.state||''}" onchange="formData.state=this.value;saveData()"></div>`;
+      html += `<div><label class="block text-sm mb-1">State (2 letters)</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.state||''}" onchange="formData.state=this.value;saveData()"></div>`;
       html += `<div><label class="block text-sm mb-1">Zip</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.zip||''}" onchange="formData.zip=this.value;saveData()"></div>`;
       html += `</div>`;
     } else if (currentStep === 8) {
@@ -90,18 +90,18 @@
       const pdfDoc = await PDFDocument.load(existingPdfBytes);
       const form = pdfDoc.getForm();
 
-      // Correct field names + fix for SSN (last 4 digits only)
+      // Safe filling with length limits
       if (formData.name) form.getTextField("Debtor1.First name").setText(formData.name);
-      
+
       if (formData.ssn) {
         const last4 = formData.ssn.toString().slice(-4);
         form.getTextField("Debtor1.SSNum").setText(last4);
       }
-      
+
       if (formData.address) form.getTextField("Debtor1.Street").setText(formData.address);
       if (formData.city) form.getTextField("Debtor1.City").setText(formData.city);
-      if (formData.state) form.getTextField("Debtor1.State").setText(formData.state);
-      if (formData.zip) form.getTextField("Debtor1.ZIP Code").setText(formData.zip);
+      if (formData.state) form.getTextField("Debtor1.State").setText(formData.state.toString().slice(0,2).toUpperCase());
+      if (formData.zip) form.getTextField("Debtor1.ZIP Code").setText(formData.zip.toString().slice(0,9));
 
       const pdfBytes = await pdfDoc.save();
       const blob = new Blob([pdfBytes], { type: 'application/pdf' });
