@@ -90,7 +90,7 @@
       const pdfDoc = await PDFDocument.load(existingPdfBytes);
       const form = pdfDoc.getForm();
 
-      // Safe filling with length limits
+      // Safe filling using exact field names from your PDF
       if (formData.name) form.getTextField("Debtor1.First name").setText(formData.name);
 
       if (formData.ssn) {
@@ -110,7 +110,7 @@
       link.download = "Official_Voluntary_Petition_B101.pdf";
       link.click();
 
-      alert("✅ Real official Voluntary Petition downloaded and filled with your data!");
+      alert("✅ Real official Voluntary Petition (Form B 101) downloaded and filled correctly!");
     } catch (err) {
       alert("Error: " + err.message);
       console.error(err);
