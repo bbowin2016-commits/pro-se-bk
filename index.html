@@ -68,19 +68,11 @@
       html += `<div><label class="block text-sm mb-1">State</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.state||''}" onchange="formData.state=this.value;saveData()"></div>`;
       html += `<div><label class="block text-sm mb-1">Zip</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.zip||''}" onchange="formData.zip=this.value;saveData()"></div>`;
       html += `</div>`;
-    } else if (currentStep === 3) {
-      html += `<h2 class="text-3xl font-semibold mb-6">Section 2 — Property (Schedule A/B)</h2><p class="text-gray-500">Real estate, vehicles, household goods, financial assets, business assets, etc.</p>`;
-    } else if (currentStep === 4) {
-      html += `<h2 class="text-3xl font-semibold mb-6">Section 3 — Debts (Schedule D/E/F)</h2><p class="text-gray-500">Secured debts, credit cards, medical bills, taxes, student loans, etc.</p>`;
-    } else if (currentStep === 5) {
-      html += `<h2 class="text-3xl font-semibold mb-6">Income & Expenses</h2>`;
-    } else if (currentStep === 6) {
-      html += `<h2 class="text-3xl font-semibold mb-6">Means Test Questions</h2>`;
-    } else if (currentStep === 7) {
-      html += `<h2 class="text-3xl font-semibold mb-6">Statement of Financial Affairs</h2>`;
     } else if (currentStep === 8) {
       html += `<h2 class="text-3xl font-semibold mb-6 text-green-600">Review & Download Official Forms</h2>`;
       html += `<button onclick="downloadOfficialForms()" class="mt-8 w-full py-6 bg-green-600 text-white text-xl font-semibold rounded-2xl">Download Real Official Chapter 7 Forms</button>`;
+    } else {
+      html += `<h2 class="text-3xl font-semibold mb-6">Step ${currentStep} — Placeholder</h2><p class="text-gray-500">More sections will be added here soon.</p>`;
     }
 
     html += `<div class="flex justify-between mt-12"><button onclick="prevStep()" class="px-8 py-3 text-gray-500">← Back</button><button onclick="nextStep()" class="px-8 py-3 bg-blue-700 text-white rounded-2xl">Continue →</button></div></div>`;
@@ -91,18 +83,20 @@
   function prevStep() { currentStep--; if (currentStep < 2) currentStep = 2; renderStep(); }
 
   async function downloadOfficialForms() {
-    alert("⏳ Filling the real official Voluntary Petition (Form B 101)...");
+    const status = document.createElement('div');
+    status.textContent = "Loading official form...";
+    document.body.appendChild(status);
 
     try {
       const { PDFDocument } = PDFLib;
-      const url = "./form_b_101.pdf";   // Loads from your repo
+      const url = "./form_b_101.pdf";
       const existingPdfBytes = await fetch(url).then(res => res.arrayBuffer());
       const pdfDoc = await PDFDocument.load(existingPdfBytes);
       const form = pdfDoc.getForm();
 
-      // Fill the actual official fields
-      if (formData.name)   form.getTextField("1a").setText(formData.name);
-      if (formData.ssn)    form.getTextField("3").setText(formData.ssn);
+      // Fill the real official form
+      if (formData.name) form.getTextField("1a").setText(formData.name);
+      if (formData.ssn) form.getTextField("3").setText(formData.ssn);
       if (formData.address) form.getTextField("4").setText(formData.address);
       if (formData.city && formData.state && formData.zip) {
         form.getTextField("5").setText(`${formData.city}, ${formData.state} ${formData.zip}`);
@@ -115,9 +109,9 @@
       link.download = "Official_Voluntary_Petition_B101.pdf";
       link.click();
 
-      alert("✅ Real official Voluntary Petition downloaded and filled with your data!");
+      status.textContent = "✅ Success! Official petition downloaded.";
     } catch (err) {
-      alert("Error loading the form. Make sure form_b_101.pdf is in the same folder as index.html.");
+      status.textContent = "Error: " + err.message;
       console.error(err);
     }
   }
