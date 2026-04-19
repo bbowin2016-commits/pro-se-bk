@@ -21,7 +21,7 @@
   <div id="step-1">
     <div class="text-center py-16">
       <h1 class="text-5xl font-bold mb-4">The BestCase for pro se debtors</h1>
-      <p class="text-xl text-gray-600">Complete Voluntary Petition — All Fields from Official Form B 101</p>
+      <p class="text-xl text-gray-600">Complete Voluntary Petition — ALL fields from Official Form B 101</p>
 
       <div class="mt-12 bg-white border-2 border-gray-200 rounded-3xl p-8 max-w-lg mx-auto">
         <label class="flex items-start gap-4 cursor-pointer">
@@ -58,7 +58,7 @@
     let html = `<div class="bg-white rounded-3xl shadow-xl p-8">`;
 
     if (currentStep === 2) {
-      html += `<h2 class="text-3xl font-semibold mb-6">Voluntary Petition — All Fields (Form B 101)</h2>`;
+      html += `<h2 class="text-3xl font-semibold mb-6">Voluntary Petition — ALL Fields (Form B 101)</h2>`;
 
       // Debtor name
       html += `<div class="grid grid-cols-3 gap-6">`;
@@ -84,12 +84,13 @@
       html += `<div><label class="block text-sm mb-1">SSN (full 9 digits)</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.ssn||''}" onchange="formData.ssn=this.value;saveData()"></div>`;
       html += `</div>`;
 
-      // Address
+      // Full address + county
       html += `<div><label class="block text-sm mb-1">Address</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.address||''}" onchange="formData.address=this.value;saveData()"></div>`;
-      html += `<div class="grid grid-cols-3 gap-6">`;
+      html += `<div class="grid grid-cols-4 gap-6">`;
       html += `<div><label class="block text-sm mb-1">City</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.city||''}" onchange="formData.city=this.value;saveData()"></div>`;
-      html += `<div><label class="block text-sm mb-1">State (2 letters)</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.state||''}" onchange="formData.state=this.value;saveData()"></div>`;
+      html += `<div><label class="block text-sm mb-1">State</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.state||''}" onchange="formData.state=this.value;saveData()"></div>`;
       html += `<div><label class="block text-sm mb-1">Zip</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.zip||''}" onchange="formData.zip=this.value;saveData()"></div>`;
+      html += `<div><label class="block text-sm mb-1">County</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.county||''}" onchange="formData.county=this.value;saveData()"></div>`;
       html += `</div>`;
 
       // Chapter
@@ -103,14 +104,14 @@
       // Joint filing
       html += `<div class="mt-6"><label class="flex items-center gap-3"><input type="checkbox" onchange="formData.joint=this.checked;saveData()"> Filing jointly with spouse</label></div>`;
 
-      // 180-day jurisdiction (no pre-select)
+      // 180-day jurisdiction
       html += `<div class="mt-8 border-t pt-6"><h3 class="font-semibold mb-4">Have you lived in this district for the last 180 days?</h3>`;
       html += `<div class="flex gap-8">`;
       html += `<label><input type="radio" name="jurisdiction180" onchange="formData.jurisdiction180='yes';saveData()"> Yes</label>`;
       html += `<label><input type="radio" name="jurisdiction180" onchange="formData.jurisdiction180='no';saveData()"> No</label>`;
       html += `</div></div>`;
 
-      // District / Court
+      // District
       html += `<div class="mt-6"><label class="block text-sm mb-1">Bankruptcy District / Court</label>`;
       html += `<select class="w-full border rounded-2xl px-4 py-3" onchange="formData.district=this.value;saveData()">`;
       html += `<option value="">-- Select District --</option>`;
@@ -167,7 +168,7 @@
       const pdfDoc = await PDFDocument.load(existingPdfBytes);
       const form = pdfDoc.getForm();
 
-      console.log("%c=== Filling ALL fields from your diagnostic list ===", "color: green; font-weight: bold");
+      console.log("%c=== Filling ALL fields from the official form ===", "color: green; font-weight: bold");
 
       const safeSetText = (fieldName, value) => {
         if (!value) return;
@@ -194,14 +195,7 @@
       safeSetText("Debtor1.City", formData.city);
       safeSetText("Debtor1.State", formData.state);
       safeSetText("Debtor1.ZIP Code", formData.zip);
-
-      // District — trying multiple possible names
-      if (formData.district) {
-        safeSetText("Bankruptcy District Information", formData.district);
-        safeSetText("District", formData.district);
-        safeSetText("District_2", formData.district);
-        safeSetText("District_3", formData.district);
-      }
+      safeSetText("Bankruptcy District Information", formData.district);
 
       // Spouse
       safeSetText("Debtor2.First name", formData.spouseFirst);
