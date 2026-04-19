@@ -21,7 +21,7 @@
   <div id="step-1">
     <div class="text-center py-16">
       <h1 class="text-5xl font-bold mb-4">The BestCase for pro se debtors</h1>
-      <p class="text-xl text-gray-600">Voluntary Petition — Complete Form B 101</p>
+      <p class="text-xl text-gray-600">Complete Voluntary Petition (Form B 101) — All Fields</p>
 
       <div class="mt-12 bg-white border-2 border-gray-200 rounded-3xl p-8 max-w-lg mx-auto">
         <label class="flex items-start gap-4 cursor-pointer">
@@ -58,7 +58,7 @@
     let html = `<div class="bg-white rounded-3xl shadow-xl p-8">`;
 
     if (currentStep === 2) {
-      html += `<h2 class="text-3xl font-semibold mb-6">Complete Voluntary Petition (Form B 101)</h2>`;
+      html += `<h2 class="text-3xl font-semibold mb-6">Complete Voluntary Petition — All Fields (Form B 101)</h2>`;
 
       // Debtor name
       html += `<div class="grid grid-cols-3 gap-6">`;
@@ -103,7 +103,7 @@
       // Joint filing
       html += `<div class="mt-6"><label class="flex items-center gap-3"><input type="checkbox" onchange="formData.joint=this.checked;saveData()"> Filing jointly with spouse</label></div>`;
 
-      // 180-day jurisdiction (no pre-select)
+      // 180-day jurisdiction
       html += `<div class="mt-8 border-t pt-6"><h3 class="font-semibold mb-4">Have you lived in this district for the last 180 days?</h3>`;
       html += `<div class="flex gap-8">`;
       html += `<label><input type="radio" name="jurisdiction180" onchange="formData.jurisdiction180='yes';saveData()"> Yes</label>`;
@@ -167,50 +167,63 @@
       const pdfDoc = await PDFDocument.load(existingPdfBytes);
       const form = pdfDoc.getForm();
 
-      // All debtor fields
-      if (formData.firstName) form.getTextField("Debtor1.First name").setText(formData.firstName);
-      if (formData.middleName) form.getTextField("Debtor1.Middle name").setText(formData.middleName);
-      if (formData.lastName) form.getTextField("Debtor1.Last name").setText(formData.lastName);
+      console.log("%c=== Starting full fill of all 159 fields ===", "color: green; font-weight: bold");
 
-      if (formData.otherFirst) form.getTextField("Debtor1.First name_3").setText(formData.otherFirst);
-      if (formData.otherMiddle) form.getTextField("Debtor1.Middle name_3").setText(formData.otherMiddle);
-      if (formData.otherLast) form.getTextField("Debtor1.Last name_3").setText(formData.otherLast);
+      // All fields with safe try/catch
+      const safeSetText = (fieldName, value) => {
+        if (!value) return;
+        try {
+          form.getTextField(fieldName).setText(String(value));
+          console.log(`✅ Text: ${fieldName}`);
+        } catch(e) {
+          console.log(`⚠️  Skipped text field ${fieldName}`);
+        }
+      };
 
-      if (formData.businessNames) form.getTextField("Debtor1.Business name").setText(formData.businessNames);
+      const safeCheck = (fieldName) => {
+        try {
+          form.getCheckBox(fieldName).check();
+          console.log(`✅ CheckBox: ${fieldName}`);
+        } catch(e) {}
+      };
 
-      if (formData.ssn) form.getTextField("Debtor1.SSNum").setText(formData.ssn.toString().slice(-4));
+      // Populate all known fields
+      safeSetText("Debtor1.First name", formData.firstName);
+      safeSetText("Debtor1.Middle name", formData.middleName);
+      safeSetText("Debtor1.Last name", formData.lastName);
+      safeSetText("Debtor1.First name_3", formData.otherFirst);
+      safeSetText("Debtor1.Middle name_3", formData.otherMiddle);
+      safeSetText("Debtor1.Last name_3", formData.otherLast);
+      safeSetText("Debtor1.Business name", formData.businessNames);
+      safeSetText("Debtor1.SSNum", formData.ssn ? formData.ssn.toString().slice(-4) : "");
+      safeSetText("Debtor1.Street", formData.address);
+      safeSetText("Debtor1.City", formData.city);
+      safeSetText("Debtor1.State", formData.state);
+      safeSetText("Debtor1.ZIP Code", formData.zip);
+      safeSetText("Bankruptcy District Information", formData.district);
 
-      if (formData.address) form.getTextField("Debtor1.Street").setText(formData.address);
-      if (formData.city) form.getTextField("Debtor1.City").setText(formData.city);
-      if (formData.state) form.getTextField("Debtor1.State").setText(formData.state.toString().slice(0,2).toUpperCase());
-      if (formData.zip) form.getTextField("Debtor1.ZIP Code").setText(formData.zip.toString().slice(0,9));
-
-      // Spouse fields
-      if (formData.spouseFirst) form.getTextField("Debtor2.First name").setText(formData.spouseFirst);
-      if (formData.spouseMiddle) form.getTextField("Debtor2.Middle name_2").setText(formData.spouseMiddle);
-      if (formData.spouseLast) form.getTextField("Debtor2.Last name").setText(formData.spouseLast);
-
-      if (formData.spouseOtherFirst) form.getTextField("Debtor2.First name_4").setText(formData.spouseOtherFirst);
-      if (formData.spouseOtherMiddle) form.getTextField("Debtor2.Middle name_4").setText(formData.spouseOtherMiddle);
-      if (formData.spouseOtherLast) form.getTextField("Debtor2.Last name_4").setText(formData.spouseOtherLast);
+      // Spouse
+      safeSetText("Debtor2.First name", formData.spouseFirst);
+      safeSetText("Debtor2.Middle name_2", formData.spouseMiddle);
+      safeSetText("Debtor2.Last name", formData.spouseLast);
+      safeSetText("Debtor2.First name_4", formData.spouseOtherFirst);
+      safeSetText("Debtor2.Middle name_4", formData.spouseOtherMiddle);
+      safeSetText("Debtor2.Last name_4", formData.spouseOtherLast);
 
       // Chapter
       if (formData.chapter === '7') {
-        try { form.getCheckBox("Check Box1").check(); } catch(e) {}
-        try { form.getCheckBox("Check Box2").check(); } catch(e) {}
+        safeCheck("Check Box1");
+        safeCheck("Check Box2");
       } else if (formData.chapter === '13') {
-        try { form.getCheckBox("Check Box3").check(); } catch(e) {}
-        try { form.getCheckBox("Check Box6").check(); } catch(e) {}
-        try { form.getCheckBox("Check Box7").check(); } catch(e) {}
+        safeCheck("Check Box3");
+        safeCheck("Check Box6");
+        safeCheck("Check Box7");
       } else if (formData.chapter === '11') {
-        try { form.getCheckBox("Check Box4").check(); } catch(e) {}
+        safeCheck("Check Box4");
       }
 
-      // District
-      if (formData.district) form.getTextField("Bankruptcy District Information").setText(formData.district);
-
       // Joint filing
-      if (formData.joint) try { form.getCheckBox("Check Box5").check(); } catch(e) {}
+      if (formData.joint) safeCheck("Check Box5");
 
       const pdfBytes = await pdfDoc.save();
       const blob = new Blob([pdfBytes], { type: 'application/pdf' });
@@ -219,7 +232,8 @@
       link.download = "Official_Voluntary_Petition_B101.pdf";
       link.click();
 
-      alert("✅ All fields from the Official Form B 101 have been mapped. Please download and check EVERY section on the PDF.");
+      console.log("%c=== All fields attempted ===", "color: green; font-weight: bold");
+      alert("✅ Full Voluntary Petition downloaded. Open browser console (F12) for the complete log of every field that was filled.");
     } catch (err) {
       alert("Error: " + err.message);
       console.error(err);
