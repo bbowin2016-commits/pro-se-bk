@@ -91,18 +91,18 @@
   function prevStep() { currentStep--; if (currentStep < 2) currentStep = 2; renderStep(); }
 
   async function downloadOfficialForms() {
-    alert("⏳ Loading and filling the real official Voluntary Petition (Form B 101)...");
+    alert("⏳ Filling the real official Voluntary Petition (Form B 101)...");
 
     try {
       const { PDFDocument } = PDFLib;
-      const url = "https://www.uscourts.gov/sites/default/files/form_b_101_0.pdf";
+      const url = "./form_b_101.pdf";   // Loads from your repo
       const existingPdfBytes = await fetch(url).then(res => res.arrayBuffer());
       const pdfDoc = await PDFDocument.load(existingPdfBytes);
       const form = pdfDoc.getForm();
 
-      // Fill the actual fields on the official form
-      if (formData.name) form.getTextField("1a").setText(formData.name);
-      if (formData.ssn) form.getTextField("3").setText(formData.ssn);
+      // Fill the actual official fields
+      if (formData.name)   form.getTextField("1a").setText(formData.name);
+      if (formData.ssn)    form.getTextField("3").setText(formData.ssn);
       if (formData.address) form.getTextField("4").setText(formData.address);
       if (formData.city && formData.state && formData.zip) {
         form.getTextField("5").setText(`${formData.city}, ${formData.state} ${formData.zip}`);
@@ -115,9 +115,9 @@
       link.download = "Official_Voluntary_Petition_B101.pdf";
       link.click();
 
-      alert("✅ Real official Voluntary Petition (Form B 101) downloaded and filled with your data!");
+      alert("✅ Real official Voluntary Petition downloaded and filled with your data!");
     } catch (err) {
-      alert("There was a small issue loading the form. Please try again or let me know.");
+      alert("Error loading the form. Make sure form_b_101.pdf is in the same folder as index.html.");
       console.error(err);
     }
   }
