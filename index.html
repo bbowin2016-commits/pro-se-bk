@@ -58,7 +58,7 @@
     let html = `<div class="bg-white rounded-3xl shadow-xl p-8">`;
 
     if (currentStep === 2) {
-      html += `<h2 class="text-3xl font-semibold mb-6">Section 1 — Basic Information (Voluntary Petition)</h2>`;
+      html += `<h2 class="text-3xl font-semibold mb-6">Voluntary Petition — Section 1 (All Fields)</h2>`;
 
       // Main name
       html += `<div class="grid grid-cols-3 gap-6">`;
@@ -92,7 +92,32 @@
       html += `<div><label class="block text-sm mb-1">Zip</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.zip||''}" onchange="formData.zip=this.value;saveData()"></div>`;
       html += `</div>`;
 
-      // Spouse
+      // Chapter selection (client chooses)
+      html += `<div class="mt-8 border-t pt-6"><h3 class="font-semibold mb-4">Chapter</h3>`;
+      html += `<div class="flex gap-8">`;
+      html += `<label><input type="radio" name="chapter" ${formData.chapter==='7'?'checked':''} onchange="formData.chapter='7';saveData()"> Chapter 7</label>`;
+      html += `<label><input type="radio" name="chapter" ${formData.chapter==='13'?'checked':''} onchange="formData.chapter='13';saveData()"> Chapter 13</label>`;
+      html += `<label><input type="radio" name="chapter" ${formData.chapter==='11'?'checked':''} onchange="formData.chapter='11';saveData()"> Chapter 11</label>`;
+      html += `</div></div>`;
+
+      // Joint filing
+      html += `<div class="mt-6"><label class="flex items-center gap-3"><input type="checkbox" ${formData.joint?'checked':''} onchange="formData.joint=this.checked;saveData()"> Filing jointly with spouse</label></div>`;
+
+      // Prior bankruptcy
+      html += `<div class="mt-8 border-t pt-6"><h3 class="font-semibold mb-4">Have you filed bankruptcy in the last 8 years?</h3>`;
+      html += `<div class="flex gap-8">`;
+      html += `<label><input type="radio" name="priorBk" ${formData.priorBk==='yes'?'checked':''} onchange="formData.priorBk='yes';saveData()"> Yes</label>`;
+      html += `<label><input type="radio" name="priorBk" ${formData.priorBk==='no'?'checked':''} onchange="formData.priorBk='no';saveData()"> No</label>`;
+      html += `</div>`;
+      html += `<div class="mt-4"><label class="block text-sm mb-1">If yes, list case numbers / dates</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.priorBkDetails||''}" onchange="formData.priorBkDetails=this.value;saveData()"></div></div>`;
+
+      // Eviction
+      html += `<div class="mt-6"><label class="flex items-center gap-3"><input type="checkbox" ${formData.eviction?'checked':''} onchange="formData.eviction=this.checked;saveData()"> I am currently facing eviction</label></div>`;
+
+      // Sole proprietor
+      html += `<div class="mt-6"><label class="flex items-center gap-3"><input type="checkbox" ${formData.soleProp?'checked':''} onchange="formData.soleProp=this.checked;saveData()"> I am a sole proprietor</label></div>`;
+
+      // Spouse section
       html += `<div class="mt-10 border-t pt-6"><h3 class="font-semibold mb-4">Spouse Information (if filing jointly)</h3>`;
       html += `<div class="grid grid-cols-3 gap-6">`;
       html += `<div><label class="block text-sm mb-1">Spouse First</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.spouseFirst||''}" onchange="formData.spouseFirst=this.value;saveData()"></div>`;
@@ -100,10 +125,10 @@
       html += `<div><label class="block text-sm mb-1">Spouse Last</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.spouseLast||''}" onchange="formData.spouseLast=this.value;saveData()"></div>`;
       html += `</div></div>`;
     } else if (currentStep === 8) {
-      html += `<h2 class="text-3xl font-semibold mb-6 text-green-600">Review & Download Official Forms</h2>`;
-      html += `<button onclick="downloadOfficialForms()" class="mt-8 w-full py-6 bg-green-600 text-white text-xl font-semibold rounded-2xl">Download Real Official Chapter 7 Petition</button>`;
+      html += `<h2 class="text-3xl font-semibold mb-6 text-green-600">Review & Download Official Voluntary Petition</h2>`;
+      html += `<button onclick="downloadOfficialForms()" class="mt-8 w-full py-6 bg-green-600 text-white text-xl font-semibold rounded-2xl">Download Completed Form B 101</button>`;
     } else {
-      html += `<h2 class="text-3xl font-semibold mb-6">Step ${currentStep} — Placeholder</h2><p class="text-gray-500">More sections coming soon.</p>`;
+      html += `<h2 class="text-3xl font-semibold mb-6">Step ${currentStep} — Placeholder</h2><p class="text-gray-500">We will add more sections after the Voluntary Petition is perfect.</p>`;
     }
 
     html += `<div class="flex justify-between mt-12"><button onclick="prevStep()" class="px-8 py-3 text-gray-500">← Back</button><button onclick="nextStep()" class="px-8 py-3 bg-blue-700 text-white rounded-2xl">Continue →</button></div></div>`;
@@ -126,15 +151,15 @@
       if (formData.middleName) form.getTextField("Debtor1.Middle name").setText(formData.middleName);
       if (formData.lastName) form.getTextField("Debtor1.Last name").setText(formData.lastName);
 
-      // Other names used (split fields)
+      // Other names
       if (formData.otherFirst) form.getTextField("Debtor1.First name_3").setText(formData.otherFirst);
       if (formData.otherMiddle) form.getTextField("Debtor1.Middle name_3").setText(formData.otherMiddle);
       if (formData.otherLast) form.getTextField("Debtor1.Last name_3").setText(formData.otherLast);
 
-      // Business names
+      // Business
       if (formData.businessNames) form.getTextField("Debtor1.Business name").setText(formData.businessNames);
 
-      // SSN (last 4 only)
+      // SSN (last 4)
       if (formData.ssn) form.getTextField("Debtor1.SSNum").setText(formData.ssn.toString().slice(-4));
 
       // Address
@@ -148,9 +173,20 @@
       if (formData.spouseMiddle) form.getTextField("Debtor2.Middle name_2").setText(formData.spouseMiddle);
       if (formData.spouseLast) form.getTextField("Debtor2.Last name").setText(formData.spouseLast);
 
-      // Chapter 7 checkbox (most common one on the form)
-      try { form.getCheckBox("Check Box1").check(); } catch(e) {}
-      try { form.getCheckBox("Check Box2").check(); } catch(e) {}   // sometimes Chapter 7 is Box 2
+      // Chapter selection (client choice)
+      if (formData.chapter === '7') {
+        try { form.getCheckBox("Check Box1").check(); } catch(e) {}
+        try { form.getCheckBox("Check Box2").check(); } catch(e) {}
+      } else if (formData.chapter === '13') {
+        try { form.getCheckBox("Check Box3").check(); } catch(e) {}
+      } else if (formData.chapter === '11') {
+        try { form.getCheckBox("Check Box4").check(); } catch(e) {}
+      }
+
+      // Joint filing
+      if (formData.joint) {
+        try { form.getCheckBox("Check Box5").check(); } catch(e) {}
+      }
 
       const pdfBytes = await pdfDoc.save();
       const blob = new Blob([pdfBytes], { type: 'application/pdf' });
@@ -159,7 +195,7 @@
       link.download = "Official_Voluntary_Petition_B101.pdf";
       link.click();
 
-      alert("✅ Voluntary Petition downloaded — more fields filled!");
+      alert("✅ Voluntary Petition downloaded — all fields from the questionnaire are now mapped!");
     } catch (err) {
       alert("Error: " + err.message);
       console.error(err);
