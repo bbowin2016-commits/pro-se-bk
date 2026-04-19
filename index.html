@@ -57,7 +57,7 @@
     const container = document.getElementById('main-content');
     let html = `<div class="bg-white rounded-3xl shadow-xl p-8">`;
 
-    if (currentStep === 2) { // Full Section 1
+    if (currentStep === 2) {
       html += `<h2 class="text-3xl font-semibold mb-6">Section 1 — Basic Information</h2>`;
       html += `<div class="grid grid-cols-3 gap-6">`;
       html += `<div><label class="block text-sm mb-1">First Name</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.firstName||''}" onchange="formData.firstName=this.value;saveData()"></div>`;
@@ -80,19 +80,11 @@
       html += `<div><label class="block text-sm mb-1">State (2 letters)</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.state||''}" onchange="formData.state=this.value;saveData()"></div>`;
       html += `<div><label class="block text-sm mb-1">Zip</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.zip||''}" onchange="formData.zip=this.value;saveData()"></div>`;
       html += `</div>`;
-
-      // Spouse section
-      html += `<div class="mt-8 border-t pt-6"><h3 class="font-semibold mb-4">Spouse Information (if filing jointly)</h3>`;
-      html += `<div class="grid grid-cols-3 gap-6">`;
-      html += `<div><label class="block text-sm mb-1">Spouse First Name</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.spouseFirst||''}" onchange="formData.spouseFirst=this.value;saveData()"></div>`;
-      html += `<div><label class="block text-sm mb-1">Spouse Middle Name</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.spouseMiddle||''}" onchange="formData.spouseMiddle=this.value;saveData()"></div>`;
-      html += `<div><label class="block text-sm mb-1">Spouse Last Name</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.spouseLast||''}" onchange="formData.spouseLast=this.value;saveData()"></div>`;
-      html += `</div></div>`;
     } else if (currentStep === 8) {
       html += `<h2 class="text-3xl font-semibold mb-6 text-green-600">Review & Download Official Forms</h2>`;
       html += `<button onclick="downloadOfficialForms()" class="mt-8 w-full py-6 bg-green-600 text-white text-xl font-semibold rounded-2xl">Download Real Official Chapter 7 Forms</button>`;
     } else {
-      html += `<h2 class="text-3xl font-semibold mb-6">Step ${currentStep} — Placeholder</h2><p class="text-gray-500">More sections (Property, Debts, Means Test, SOFA, etc.) coming in the next update.</p>`;
+      html += `<h2 class="text-3xl font-semibold mb-6">Step ${currentStep} — Placeholder</h2><p class="text-gray-500">More sections coming soon.</p>`;
     }
 
     html += `<div class="flex justify-between mt-12"><button onclick="prevStep()" class="px-8 py-3 text-gray-500">← Back</button><button onclick="nextStep()" class="px-8 py-3 bg-blue-700 text-white rounded-2xl">Continue →</button></div></div>`;
@@ -109,6 +101,8 @@
       const existingPdfBytes = await fetch(url).then(res => res.arrayBuffer());
       const pdfDoc = await PDFDocument.load(existingPdfBytes);
       const form = pdfDoc.getForm();
+
+      console.log("Filling fields with data:", formData);
 
       // Name fields
       if (formData.firstName) form.getTextField("Debtor1.First name").setText(formData.firstName);
