@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -59,11 +60,17 @@
 
     if (currentStep === 2) {
       html += `<h2 class="text-3xl font-semibold mb-6">Section 1 — Basic Information</h2>`;
-      html += `<div class="grid grid-cols-2 gap-6">`;
-      html += `<div><label class="block text-sm mb-1">Full Name</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.name||''}" onchange="formData.name=this.value;saveData()"></div>`;
+      html += `<div class="grid grid-cols-3 gap-6">`;
+      html += `<div><label class="block text-sm mb-1">First Name</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.firstName||''}" onchange="formData.firstName=this.value;saveData()"></div>`;
+      html += `<div><label class="block text-sm mb-1">Middle Name</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.middleName||''}" onchange="formData.middleName=this.value;saveData()"></div>`;
+      html += `<div><label class="block text-sm mb-1">Last Name</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.lastName||''}" onchange="formData.lastName=this.value;saveData()"></div>`;
+      html += `</div>`;
+      html += `<div class="grid grid-cols-2 gap-6 mt-6">`;
       html += `<div><label class="block text-sm mb-1">Date of Birth</label><input type="date" class="w-full border rounded-2xl px-4 py-3" value="${formData.dob||''}" onchange="formData.dob=this.value;saveData()"></div>`;
       html += `<div><label class="block text-sm mb-1">SSN (full 9 digits)</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.ssn||''}" onchange="formData.ssn=this.value;saveData()"></div>`;
+      html += `</div>`;
       html += `<div><label class="block text-sm mb-1">Address</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.address||''}" onchange="formData.address=this.value;saveData()"></div>`;
+      html += `<div class="grid grid-cols-3 gap-6">`;
       html += `<div><label class="block text-sm mb-1">City</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.city||''}" onchange="formData.city=this.value;saveData()"></div>`;
       html += `<div><label class="block text-sm mb-1">State (2 letters)</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.state||''}" onchange="formData.state=this.value;saveData()"></div>`;
       html += `<div><label class="block text-sm mb-1">Zip</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.zip||''}" onchange="formData.zip=this.value;saveData()"></div>`;
@@ -90,9 +97,12 @@
       const pdfDoc = await PDFDocument.load(existingPdfBytes);
       const form = pdfDoc.getForm();
 
-      // Safe filling using exact field names from your PDF
-      if (formData.name) form.getTextField("Debtor1.First name").setText(formData.name);
+      // Fill name fields separately
+      if (formData.firstName) form.getTextField("Debtor1.First name").setText(formData.firstName);
+      if (formData.middleName) form.getTextField("Debtor1.Middle name").setText(formData.middleName);
+      if (formData.lastName) form.getTextField("Debtor1.Last name").setText(formData.lastName);
 
+      // SSN (last 4 only)
       if (formData.ssn) {
         const last4 = formData.ssn.toString().slice(-4);
         form.getTextField("Debtor1.SSNum").setText(last4);
@@ -110,7 +120,7 @@
       link.download = "Official_Voluntary_Petition_B101.pdf";
       link.click();
 
-      alert("✅ Real official Voluntary Petition (Form B 101) downloaded and filled correctly!");
+      alert("✅ Real official Voluntary Petition downloaded and filled with your data!");
     } catch (err) {
       alert("Error: " + err.message);
       console.error(err);
