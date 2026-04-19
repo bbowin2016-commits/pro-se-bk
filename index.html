@@ -58,7 +58,7 @@
     let html = `<div class="bg-white rounded-3xl shadow-xl p-8">`;
 
     if (currentStep === 2) {
-      html += `<h2 class="text-3xl font-semibold mb-6">Voluntary Petition — ALL Fields from Official Form B 101</h2>`;
+      html += `<h2 class="text-3xl font-semibold mb-6">Voluntary Petition — ALL Fields (Form B 101)</h2>`;
 
       // Debtor name
       html += `<div class="grid grid-cols-3 gap-6">`;
@@ -130,7 +130,7 @@
       html += `<div class="mt-4"><input type="text" class="w-full border rounded-2xl px-4 py-3" placeholder="Case 2 – District / When / Case #" value="${formData.priorCase2||''}" onchange="formData.priorCase2=this.value;saveData()"></div>`;
       html += `<div class="mt-4"><input type="text" class="w-full border rounded-2xl px-4 py-3" placeholder="Case 3 – District / When / Case #" value="${formData.priorCase3||''}" onchange="formData.priorCase3=this.value;saveData()"></div></div>`;
 
-      // Spouse
+      // Spouse section
       html += `<div class="mt-10 border-t pt-6"><h3 class="font-semibold mb-4">Spouse Information (if filing jointly)</h3>`;
       html += `<div class="grid grid-cols-3 gap-6">`;
       html += `<div><label class="block text-sm mb-1">Spouse First</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.spouseFirst||''}" onchange="formData.spouseFirst=this.value;saveData()"></div>`;
@@ -167,9 +167,8 @@
       const pdfDoc = await PDFDocument.load(existingPdfBytes);
       const form = pdfDoc.getForm();
 
-      console.log("%c=== Filling ALL fields from diagnostic ===", "color: green; font-weight: bold");
+      console.log("%c=== Filling ALL fields from your diagnostic list ===", "color: green; font-weight: bold");
 
-      // All fields with safe try/catch
       const safeSetText = (fieldName, value) => {
         if (!value) return;
         try {
@@ -179,10 +178,10 @@
       };
 
       const safeCheck = (fieldName) => {
-        try { form.getCheckBox(fieldName).check(); console.log(`✅ Check: ${fieldName}`); } catch (e) {}
+        try { form.getCheckBox(fieldName).check(); console.log(`✅ CheckBox: ${fieldName}`); } catch (e) {}
       };
 
-      // Populate every field from your diagnostic list
+      // All fields from your diagnostic
       safeSetText("Debtor1.First name", formData.firstName);
       safeSetText("Debtor1.Middle name", formData.middleName);
       safeSetText("Debtor1.Last name", formData.lastName);
@@ -206,9 +205,16 @@
       safeSetText("Debtor2.Last name_4", formData.spouseOtherLast);
 
       // Chapter
-      if (formData.chapter === '7') { safeCheck("Check Box1"); safeCheck("Check Box2"); }
-      if (formData.chapter === '13') { safeCheck("Check Box3"); safeCheck("Check Box6"); safeCheck("Check Box7"); }
-      if (formData.chapter === '11') { safeCheck("Check Box4"); }
+      if (formData.chapter === '7') {
+        safeCheck("Check Box1");
+        safeCheck("Check Box2");
+      } else if (formData.chapter === '13') {
+        safeCheck("Check Box3");
+        safeCheck("Check Box6");
+        safeCheck("Check Box7");
+      } else if (formData.chapter === '11') {
+        safeCheck("Check Box4");
+      }
 
       // Joint filing
       if (formData.joint) safeCheck("Check Box5");
@@ -220,8 +226,8 @@
       link.download = "Official_Voluntary_Petition_B101.pdf";
       link.click();
 
-      console.log("%c=== All fields attempted — check console for log ===", "color: green; font-weight: bold");
-      alert("✅ Full Voluntary Petition downloaded. Open F12 Console for the complete fill log.");
+      console.log("%c=== All fields attempted ===", "color: green; font-weight: bold");
+      alert("✅ Full Voluntary Petition downloaded. Open F12 Console for the log of every field that was filled.");
     } catch (err) {
       alert("Error: " + err.message);
       console.error(err);
