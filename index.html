@@ -62,7 +62,7 @@
       html += `<div class="grid grid-cols-2 gap-6">`;
       html += `<div><label class="block text-sm mb-1">Full Name</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.name||''}" onchange="formData.name=this.value;saveData()"></div>`;
       html += `<div><label class="block text-sm mb-1">Date of Birth</label><input type="date" class="w-full border rounded-2xl px-4 py-3" value="${formData.dob||''}" onchange="formData.dob=this.value;saveData()"></div>`;
-      html += `<div><label class="block text-sm mb-1">SSN</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.ssn||''}" onchange="formData.ssn=this.value;saveData()"></div>`;
+      html += `<div><label class="block text-sm mb-1">SSN (full 9 digits)</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.ssn||''}" onchange="formData.ssn=this.value;saveData()"></div>`;
       html += `<div><label class="block text-sm mb-1">Address</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.address||''}" onchange="formData.address=this.value;saveData()"></div>`;
       html += `<div><label class="block text-sm mb-1">City</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.city||''}" onchange="formData.city=this.value;saveData()"></div>`;
       html += `<div><label class="block text-sm mb-1">State</label><input type="text" class="w-full border rounded-2xl px-4 py-3" value="${formData.state||''}" onchange="formData.state=this.value;saveData()"></div>`;
@@ -72,7 +72,7 @@
       html += `<h2 class="text-3xl font-semibold mb-6 text-green-600">Review & Download Official Forms</h2>`;
       html += `<button onclick="downloadOfficialForms()" class="mt-8 w-full py-6 bg-green-600 text-white text-xl font-semibold rounded-2xl">Download Real Official Chapter 7 Forms</button>`;
     } else {
-      html += `<h2 class="text-3xl font-semibold mb-6">Step ${currentStep} — Placeholder</h2><p class="text-gray-500">More sections will be added here soon.</p>`;
+      html += `<h2 class="text-3xl font-semibold mb-6">Step ${currentStep} — Placeholder</h2><p class="text-gray-500">More sections coming soon.</p>`;
     }
 
     html += `<div class="flex justify-between mt-12"><button onclick="prevStep()" class="px-8 py-3 text-gray-500">← Back</button><button onclick="nextStep()" class="px-8 py-3 bg-blue-700 text-white rounded-2xl">Continue →</button></div></div>`;
@@ -90,25 +90,18 @@
       const pdfDoc = await PDFDocument.load(existingPdfBytes);
       const form = pdfDoc.getForm();
 
-      // Correct field names from your diagnostic
-      if (formData.name) {
-        form.getTextField("Debtor1.First name").setText(formData.name);
-      }
+      // Correct field names + fix for SSN (last 4 digits only)
+      if (formData.name) form.getTextField("Debtor1.First name").setText(formData.name);
+      
       if (formData.ssn) {
-        form.getTextField("Debtor1.SSNum").setText(formData.ssn);
+        const last4 = formData.ssn.toString().slice(-4);
+        form.getTextField("Debtor1.SSNum").setText(last4);
       }
-      if (formData.address) {
-        form.getTextField("Debtor1.Street").setText(formData.address);
-      }
-      if (formData.city) {
-        form.getTextField("Debtor1.City").setText(formData.city);
-      }
-      if (formData.state) {
-        form.getTextField("Debtor1.State").setText(formData.state);
-      }
-      if (formData.zip) {
-        form.getTextField("Debtor1.ZIP Code").setText(formData.zip);
-      }
+      
+      if (formData.address) form.getTextField("Debtor1.Street").setText(formData.address);
+      if (formData.city) form.getTextField("Debtor1.City").setText(formData.city);
+      if (formData.state) form.getTextField("Debtor1.State").setText(formData.state);
+      if (formData.zip) form.getTextField("Debtor1.ZIP Code").setText(formData.zip);
 
       const pdfBytes = await pdfDoc.save();
       const blob = new Blob([pdfBytes], { type: 'application/pdf' });
@@ -117,7 +110,7 @@
       link.download = "Official_Voluntary_Petition_B101.pdf";
       link.click();
 
-      alert("✅ Real official Voluntary Petition (Form B 101) downloaded and filled with your data!");
+      alert("✅ Real official Voluntary Petition downloaded and filled with your data!");
     } catch (err) {
       alert("Error: " + err.message);
       console.error(err);
