@@ -96,7 +96,7 @@
       const pdfDoc = await PDFDocument.load(existingPdfBytes);
       const form = pdfDoc.getForm();
 
-      // Fill separate name fields correctly
+      // Fill name fields separately
       if (formData.firstName) form.getTextField("Debtor1.First name").setText(formData.firstName);
       if (formData.middleName) form.getTextField("Debtor1.Middle name").setText(formData.middleName);
       if (formData.lastName) form.getTextField("Debtor1.Last name").setText(formData.lastName);
@@ -119,7 +119,7 @@
       link.download = "Official_Voluntary_Petition_B101.pdf";
       link.click();
 
-      alert("✅ Real official Voluntary Petition downloaded with correctly split First / Middle / Last name!");
+      alert("✅ Real official Voluntary Petition downloaded and filled with your data!");
     } catch (err) {
       alert("Error: " + err.message);
       console.error(err);
